@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { UserPlus, Mail, Lock, Eye, EyeOff, User, AlertCircle } from "lucide-react";
+import { UserPlus, Mail, Lock, Eye, EyeOff, User, AlertCircle, Loader2 } from "lucide-react";
 
 export function SignUp() {
   const [formData, setFormData] = useState({
@@ -13,6 +13,7 @@ export function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -45,11 +46,16 @@ export function SignUp() {
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", formData.email);
-      localStorage.setItem("userName", formData.fullName);
-      localStorage.setItem("userRole", "student"); // Default role
-      navigate("/app/dashboard");
+      setIsSubmitting(true);
+      // Simulate API call for interactive state management
+      setTimeout(() => {
+        setIsSubmitting(false);
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("userEmail", formData.email);
+        localStorage.setItem("userName", formData.fullName);
+        localStorage.setItem("userRole", "student"); // Default role
+        navigate("/app/dashboard");
+      }, 1500);
     }
   };
 
@@ -94,9 +100,10 @@ export function SignUp() {
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   placeholder="Abdullah Alzahrani"
+                  disabled={isSubmitting}
                   className={`w-full pl-12 pr-4 py-3 bg-[#F8FAFC] dark:bg-gray-800 border ${
                     errors.fullName ? "border-red-500" : "border-gray-200 dark:border-gray-700"
-                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all`}
+                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all disabled:opacity-50`}
                 />
               </div>
               {errors.fullName && (
@@ -120,9 +127,10 @@ export function SignUp() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="s202100000@kfupm.edu.sa"
+                  disabled={isSubmitting}
                   className={`w-full pl-12 pr-4 py-3 bg-[#F8FAFC] dark:bg-gray-800 border ${
                     errors.email ? "border-red-500" : "border-gray-200 dark:border-gray-700"
-                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all`}
+                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all disabled:opacity-50`}
                 />
               </div>
               {errors.email && (
@@ -147,9 +155,10 @@ export function SignUp() {
                   onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
                   placeholder="202100000"
                   maxLength={9}
+                  disabled={isSubmitting}
                   className={`w-full pl-12 pr-4 py-3 bg-[#F8FAFC] dark:bg-gray-800 border ${
                     errors.studentId ? "border-red-500" : "border-gray-200 dark:border-gray-700"
-                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all`}
+                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all disabled:opacity-50`}
                 />
               </div>
               {errors.studentId && (
@@ -173,14 +182,16 @@ export function SignUp() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Minimum 8 characters"
+                  disabled={isSubmitting}
                   className={`w-full pl-12 pr-12 py-3 bg-[#F8FAFC] dark:bg-gray-800 border ${
                     errors.password ? "border-red-500" : "border-gray-200 dark:border-gray-700"
-                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all`}
+                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all disabled:opacity-50`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  disabled={isSubmitting}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -206,14 +217,16 @@ export function SignUp() {
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="Re-enter your password"
+                  disabled={isSubmitting}
                   className={`w-full pl-12 pr-12 py-3 bg-[#F8FAFC] dark:bg-gray-800 border ${
                     errors.confirmPassword ? "border-red-500" : "border-gray-200 dark:border-gray-700"
-                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all`}
+                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all disabled:opacity-50`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  disabled={isSubmitting}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
                 >
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -229,10 +242,20 @@ export function SignUp() {
             {/* Sign Up Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-[#1E3A8A] to-[#06B6D4] hover:from-[#1E3A8A]/90 hover:to-[#06B6D4]/90 text-white py-3 px-6 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 mt-6"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-[#1E3A8A] to-[#06B6D4] hover:from-[#1E3A8A]/90 hover:to-[#06B6D4]/90 text-white py-3 px-6 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <UserPlus className="w-5 h-5" />
-              Create Account
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="w-5 h-5" />
+                  Create Account
+                </>
+              )}
             </button>
           </form>
 
@@ -242,8 +265,9 @@ export function SignUp() {
               Already have an account?{" "}
               <button
                 type="button"
+                disabled={isSubmitting}
                 onClick={() => navigate("/login")}
-                className="text-[#06B6D4] hover:text-[#1E3A8A] dark:hover:text-[#06B6D4] font-medium transition-colors"
+                className="text-[#06B6D4] hover:text-[#1E3A8A] dark:hover:text-[#06B6D4] font-medium transition-colors disabled:opacity-50"
               >
                 Sign in
               </button>

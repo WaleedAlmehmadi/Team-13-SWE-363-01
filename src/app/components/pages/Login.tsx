@@ -1,23 +1,46 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { LogIn, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    if (!password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple authentication - in production this would call an API
-    if (email && password) {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    
+    // Simulate API call for interactive state management
+    setTimeout(() => {
+      setIsSubmitting(false);
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("userEmail", email);
       localStorage.setItem("userRole", "student"); // Default role
       navigate("/app/dashboard");
-    }
+    }, 1500);
   };
 
   return (
@@ -58,10 +81,18 @@ export function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="abdullah@kfupm.edu.sa"
-                  required
-                  className="w-full pl-12 pr-4 py-3 bg-[#F8FAFC] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all"
+                  disabled={isSubmitting}
+                  className={`w-full pl-12 pr-4 py-3 bg-[#F8FAFC] dark:bg-gray-800 border ${
+                    errors.email ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all disabled:opacity-50`}
                 />
               </div>
+              {errors.email && (
+                <div className="flex items-center gap-1 mt-2 text-sm text-red-600 dark:text-red-400">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.email}
+                </div>
+              )}
             </div>
 
             {/* Password Input */}
@@ -77,17 +108,26 @@ export function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  required
-                  className="w-full pl-12 pr-12 py-3 bg-[#F8FAFC] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all"
+                  disabled={isSubmitting}
+                  className={`w-full pl-12 pr-12 py-3 bg-[#F8FAFC] dark:bg-gray-800 border ${
+                    errors.password ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+                  } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#06B6D4] focus:border-transparent transition-all disabled:opacity-50`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  disabled={isSubmitting}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {errors.password && (
+                <div className="flex items-center gap-1 mt-2 text-sm text-red-600 dark:text-red-400">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.password}
+                </div>
+              )}
             </div>
 
             {/* Remember Me and Forgot Password */}
@@ -97,11 +137,12 @@ export function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-[#06B6D4] focus:ring-[#06B6D4] focus:ring-offset-0"
+                  disabled={isSubmitting}
+                  className="w-4 h-4 rounded border-gray-300 text-[#06B6D4] focus:ring-[#06B6D4] focus:ring-offset-0 disabled:opacity-50"
                 />
                 <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Remember me</span>
               </label>
-              <button type="button" className="text-sm text-[#06B6D4] hover:text-[#1E3A8A] dark:hover:text-[#06B6D4] transition-colors">
+              <button type="button" className="text-sm text-[#06B6D4] hover:text-[#1E3A8A] dark:hover:text-[#06B6D4] transition-colors disabled:opacity-50">
                 Forgot password?
               </button>
             </div>
@@ -109,10 +150,20 @@ export function Login() {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-[#1E3A8A] to-[#06B6D4] hover:from-[#1E3A8A]/90 hover:to-[#06B6D4]/90 text-white py-3 px-6 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-[#1E3A8A] to-[#06B6D4] hover:from-[#1E3A8A]/90 hover:to-[#06B6D4]/90 text-white py-3 px-6 rounded-xl font-medium transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <LogIn className="w-5 h-5" />
-              Sign In
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-5 h-5" />
+                  Sign In
+                </>
+              )}
             </button>
           </form>
 
@@ -130,7 +181,8 @@ export function Login() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <button
               type="button"
-              className="flex items-center justify-center gap-2 py-3 px-4 bg-[#F8FAFC] dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl transition-all"
+              disabled={isSubmitting}
+              className="flex items-center justify-center gap-2 py-3 px-4 bg-[#F8FAFC] dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -154,7 +206,8 @@ export function Login() {
             </button>
             <button
               type="button"
-              className="flex items-center justify-center gap-2 py-3 px-4 bg-[#F8FAFC] dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl transition-all"
+              disabled={isSubmitting}
+              className="flex items-center justify-center gap-2 py-3 px-4 bg-[#F8FAFC] dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
@@ -169,8 +222,9 @@ export function Login() {
               Don't have an account?{" "}
               <button
                 type="button"
+                disabled={isSubmitting}
                 onClick={() => navigate("/signup")}
-                className="text-[#06B6D4] hover:text-[#1E3A8A] dark:hover:text-[#06B6D4] font-medium transition-colors"
+                className="text-[#06B6D4] hover:text-[#1E3A8A] dark:hover:text-[#06B6D4] font-medium transition-colors disabled:opacity-50"
               >
                 Sign up
               </button>
