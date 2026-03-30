@@ -42,17 +42,18 @@ export function Sidebar() {
       <nav className="flex gap-2 overflow-x-auto p-3 md:block md:space-y-1 md:overflow-visible md:p-4">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = window.location.pathname === item.path;
           
           return (
             <NavLink
               key={item.path}
               to={item.path}
-              className={`flex min-w-fit items-center gap-3 rounded-2xl px-4 py-3 whitespace-nowrap transition-all md:min-w-0 ${
-                isActive
-                  ? "bg-[#1E3A8A] dark:bg-[#06B6D4] text-white shadow-md"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-              }`}
+              className={({ isActive }) =>
+                `flex min-w-fit items-center gap-3 rounded-2xl px-4 py-3 whitespace-nowrap transition-all md:min-w-0 ${
+                  isActive
+                    ? "bg-[#1E3A8A] dark:bg-[#06B6D4] text-white shadow-md"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`
+              }
             >
               <Icon className="w-5 h-5" />
               <span>{item.label}</span>
