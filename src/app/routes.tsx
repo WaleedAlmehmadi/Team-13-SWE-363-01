@@ -10,6 +10,7 @@ import { Upload } from "./components/pages/Upload";
 import { Moderator } from "./components/pages/Moderator";
 import { Admin } from "./components/pages/Admin";
 import { NotFound } from "./components/pages/NotFound";
+import { Profile } from "./components/pages/Profile";
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -50,6 +51,7 @@ export const router = createBrowserRouter([
       { path: "upload", Component: Upload },
       { path: "moderator", Component: Moderator },
       { path: "admin", Component: Admin },
+      { path: "profile", Component: Profile },
       { path: "*", Component: NotFound },
     ],
   },
