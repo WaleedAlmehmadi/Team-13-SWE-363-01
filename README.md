@@ -115,6 +115,7 @@ src/
  ├── pages/            # Page-level components (Dashboard, Roadmap, etc.)
  └── routes.tsx        # Centralized RBAC and Navigation logic
 public/                # Static assets and icons
+```
 
 ---
 
