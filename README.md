@@ -115,3 +115,15 @@ src/
  ├── pages/            # Page-level components (Dashboard, Roadmap, etc.)
  └── routes.tsx        # Centralized RBAC and Navigation logic
 public/                # Static assets and icons
+
+---
+
+## Backend Setup
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+Server runs on `http://localhost:5000`
