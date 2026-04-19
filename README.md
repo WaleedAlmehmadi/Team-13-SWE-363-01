@@ -7,7 +7,7 @@
 ## 👥 Team Members
 
 * **Aseel Bawazir**: Architect
-* **Waleed Alharbi**: UI Lead
+* **Waleed Almehmadi**: UI Lead
 * **Sultan Alsbia**: Feature Developer A
 * **Amin Srraj**: Feature Developer B
 * **Abdullah Alzahrani**: QA and Documentation
