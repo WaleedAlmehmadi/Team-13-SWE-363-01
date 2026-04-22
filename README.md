@@ -121,6 +121,22 @@ public/                # Static assets and icons
 
 ## Backend Setup
 
+### Prerequisites
+* **Node.js**: version 18 or higher
+* **MongoDB Atlas**: a free cluster at [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+
+### Environment Variables
+
+Copy `.env.example` to `.env` inside the `backend/` folder and fill in your values:
+
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/swe-compass
+JWT_SECRET=your_super_secret_key_here
+```
+
+### Run the Backend
+
 ```bash
 cd backend
 npm install
@@ -128,3 +144,158 @@ npm start
 ```
 
 Server runs on `http://localhost:5000`
+
+---
+
+## 🗄 Database Schema
+
+### User
+
+| Field | Type | Notes |
+| :--- | :--- | :--- |
+| `_id` | ObjectId | Auto-generated primary key |
+| `fullName` | String | Required |
+| `email` | String | Required · unique · must end in `@kfupm.edu.sa` |
+| `studentId` | String | 9 digits · unique · optional for admin/mod |
+| `password` | String | Bcrypt-hashed · never returned in API responses |
+| `role` | String | `student` (default) · `moderator` · `admin` |
+| `createdAt` | Date | Auto-set by Mongoose timestamps |
+| `updatedAt` | Date | Auto-set by Mongoose timestamps |
+
+### Resource
+
+| Field | Type | Notes |
+| :--- | :--- | :--- |
+| `_id` | ObjectId | Auto-generated primary key |
+| `title` | String | Required |
+| `description` | String | Required |
+| `courseName` | String | Required (e.g. `ICS 202 - Data Structures`) |
+| `category` | String | Enum: Lecture Notes · Past Exams · Lab Materials · Project Templates · Study Guides · Reference Materials · Video Tutorials · Other |
+| `type` | String | `file` or `link` |
+| `fileUrl` | String | Path/URL of uploaded document (PDF, DOCX, PPTX) |
+| `resourceUrl` | String | External link (YouTube, GitHub, Drive, etc.) |
+| `uploadedBy` | ObjectId | Ref → User (required) |
+| `reviewedBy` | ObjectId | Ref → User (set by moderator) |
+| `status` | String | `pending` (default) · `approved` · `rejected` |
+| `rejectionReason` | String | Populated when status is `rejected` |
+| `rating` | Number | 0–5, default 0 |
+| `ratingCount` | Number | Number of ratings received |
+| `createdAt` | Date | Auto-set by Mongoose timestamps |
+
+```
+User ──────────────────────────────────────────┐
+ _id, fullName, email, studentId               │ uploadedBy
+ password (hashed), role, timestamps           │
+                                               ▼
+                                          Resource
+                                    title, description
+                                    courseName, category
+                                    type, fileUrl, resourceUrl
+                                    status, rating, timestamps
+                                               │ reviewedBy
+                                               ▼
+                                    User (moderator/admin)
+```
+
+---
+
+## 🔐 Authentication API
+
+Base URL: `http://localhost:5000/api/auth`
+
+### `POST /register`
+
+Creates a new student account.
+
+**Request Body**
+```json
+{
+  "fullName": "Abdullah Alzahrani",
+  "email": "s202100000@kfupm.edu.sa",
+  "studentId": "202100000",
+  "password": "securepassword"
+}
+```
+
+**Success Response** `201 Created`
+```json
+{
+  "token": "<JWT>",
+  "user": {
+    "id": "...",
+    "fullName": "Abdullah Alzahrani",
+    "email": "s202100000@kfupm.edu.sa",
+    "studentId": "202100000",
+    "role": "student"
+  }
+}
+```
+
+**Error Responses**
+
+| Status | Message |
+| :--- | :--- |
+| `400` | Must use a KFUPM email address (@kfupm.edu.sa) |
+| `400` | Email already registered |
+| `400` | Student ID already in use |
+| `400` | Validation error (e.g. password too short) |
+
+---
+
+### `POST /login`
+
+Authenticates an existing user.
+
+**Request Body**
+```json
+{
+  "email": "s202100000@kfupm.edu.sa",
+  "password": "securepassword"
+}
+```
+
+**Success Response** `200 OK`
+```json
+{
+  "token": "<JWT>",
+  "user": {
+    "id": "...",
+    "fullName": "Abdullah Alzahrani",
+    "email": "s202100000@kfupm.edu.sa",
+    "studentId": "202100000",
+    "role": "student"
+  }
+}
+```
+
+**Error Responses**
+
+| Status | Message |
+| :--- | :--- |
+| `400` | Email and password are required |
+| `401` | Invalid email or password |
+
+---
+
+### `GET /me`
+
+Returns the currently authenticated user. Requires `Authorization: Bearer <token>` header.
+
+**Success Response** `200 OK`
+```json
+{
+  "id": "...",
+  "fullName": "Abdullah Alzahrani",
+  "email": "s202100000@kfupm.edu.sa",
+  "studentId": "202100000",
+  "role": "student",
+  "createdAt": "2026-04-22T00:00:00.000Z"
+}
+```
+
+**Error Responses**
+
+| Status | Message |
+| :--- | :--- |
+| `401` | Not authorized, no token |
+| `401` | Not authorized, invalid token |
