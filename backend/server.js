@@ -15,6 +15,8 @@ app.use(cors());
 app.use(helmet());
 
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/resources', require('./routes/resources'));
 
 app.get('/', (_req, res) => {
   res.json({ message: 'SWE Compass API is running' });
