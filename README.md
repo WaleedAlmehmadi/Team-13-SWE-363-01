@@ -6,11 +6,13 @@
 
 ## 👥 Team Members
 
-* **Aseel Bawazir**: Architect
-* **Waleed Almehmadi**: UI Lead
-* **Sultan Alsbia**: Feature Developer A
-* **Amin Srraj**: Feature Developer B
-* **Abdullah Alzahrani**: QA and Documentation
+| Member | Name | Phase 5 Role | Phase 6 Role |
+| :--- | :--- | :--- | :--- |
+| **Member 1** | Waleed Almehmadi | **Architecture & Setup** — Initialize Express & folder structure (MVC), implement security middleware (Helmet/CORS), create README "How-to-Run" section & `.env.example` | — |
+| **Member 2** | Abdullah Alzahrani | **Database & Auth** — Connect MongoDB Atlas, design all schemas, implement User Authentication endpoints, write schema diagram/description for documentation | — |
+| **Member 3** | Amin Srraj | **Logic & Documentation** — Build all CRUD APIs, implement Joi validation, write API table for README (Methods, Paths, and sample JSON Request/Response) | — |
+| **Member 4** | Sultan Alsbia | — | **Deployment & Performance** — Deploy to live platforms (Render/Vercel), configure production CORS/HTTPS, optimize assets (Minify JS/CSS and compress images) |
+| **Member 5** | Aseel Bawazir | — | **Quality & Video** — Conduct full Mobile/Desktop responsiveness audit, record the 3–5 minute Demo Video, add Live URL and Demo Login Credentials to the final README |
 
 ---
 
@@ -107,14 +109,14 @@
 
 ```text
 src/
- ├── components/
- │    ├── layout/      # Sidebar, Header, and Root Layout
- │    └── ui/          # Reusable UI elements (Buttons, Inputs, etc.)
- ├── data/             # Mock data for courses and resources
- ├── layouts/          # Wrapper components for different auth states
- ├── pages/            # Page-level components (Dashboard, Roadmap, etc.)
- └── routes.tsx        # Centralized RBAC and Navigation logic
-public/                # Static assets and icons
+ ├── components/
+ │    ├── layout/      # Sidebar, Header, and Root Layout
+ │    └── ui/          # Reusable UI elements (Buttons, Inputs, etc.)
+ ├── data/             # Mock data for courses and resources
+ ├── layouts/          # Wrapper components for different auth states
+ ├── pages/            # Page-level components (Dashboard, Roadmap, etc.)
+ └── routes.tsx        # Centralized RBAC and Navigation logic
+public/                # Static assets and icons
 ```
 
 ---
@@ -123,19 +125,25 @@ public/                # Static assets and icons
 
 ### Prerequisites
 * **Node.js**: version 18 or higher
-* **MongoDB Atlas**: a free cluster at [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+* **MongoDB Atlas**: Cluster0 on `cluster0.i5zhp4x.mongodb.net` (database: `swe363db`)
 
 ### Environment Variables
 
-Copy `.env.example` to `.env` inside the `backend/` folder and fill in your values:
+Copy `.env.example` to `.env` inside the `backend/` folder:
 
-```env
-PORT=5000
-MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/swe-compass
-JWT_SECRET=your_super_secret_key_here
+```bash
+cp backend/.env.example backend/.env
 ```
 
-### Run the Backend
+The `.env.example` file already contains the real values for the team:
+
+| Variable | Value |
+| :--- | :--- |
+| `PORT` | `5000` |
+| `MONGO_URI` | MongoDB Atlas connection string |
+| `JWT_SECRET` | `swe363team13secret` |
+
+### Start the Server
 
 ```bash
 cd backend
@@ -143,159 +151,16 @@ npm install
 npm start
 ```
 
+Expected output:
+```
+MongoDB connected
+Server is running on port 5000
+```
+
 Server runs on `http://localhost:5000`
 
----
-
-## 🗄 Database Schema
-
-### User
-
-| Field | Type | Notes |
-| :--- | :--- | :--- |
-| `_id` | ObjectId | Auto-generated primary key |
-| `fullName` | String | Required |
-| `email` | String | Required · unique · must end in `@kfupm.edu.sa` |
-| `studentId` | String | 9 digits · unique · optional for admin/mod |
-| `password` | String | Bcrypt-hashed · never returned in API responses |
-| `role` | String | `student` (default) · `moderator` · `admin` |
-| `createdAt` | Date | Auto-set by Mongoose timestamps |
-| `updatedAt` | Date | Auto-set by Mongoose timestamps |
-
-### Resource
-
-| Field | Type | Notes |
-| :--- | :--- | :--- |
-| `_id` | ObjectId | Auto-generated primary key |
-| `title` | String | Required |
-| `description` | String | Required |
-| `courseName` | String | Required (e.g. `ICS 202 - Data Structures`) |
-| `category` | String | Enum: Lecture Notes · Past Exams · Lab Materials · Project Templates · Study Guides · Reference Materials · Video Tutorials · Other |
-| `type` | String | `file` or `link` |
-| `fileUrl` | String | Path/URL of uploaded document (PDF, DOCX, PPTX) |
-| `resourceUrl` | String | External link (YouTube, GitHub, Drive, etc.) |
-| `uploadedBy` | ObjectId | Ref → User (required) |
-| `reviewedBy` | ObjectId | Ref → User (set by moderator) |
-| `status` | String | `pending` (default) · `approved` · `rejected` |
-| `rejectionReason` | String | Populated when status is `rejected` |
-| `rating` | Number | 0–5, default 0 |
-| `ratingCount` | Number | Number of ratings received |
-| `createdAt` | Date | Auto-set by Mongoose timestamps |
-
-```
-User ──────────────────────────────────────────┐
- _id, fullName, email, studentId               │ uploadedBy
- password (hashed), role, timestamps           │
-                                               ▼
-                                          Resource
-                                    title, description
-                                    courseName, category
-                                    type, fileUrl, resourceUrl
-                                    status, rating, timestamps
-                                               │ reviewedBy
-                                               ▼
-                                    User (moderator/admin)
-```
-
----
-
-## 🔐 Authentication API
-
-Base URL: `http://localhost:5000/api/auth`
-
-### `POST /register`
-
-Creates a new student account.
-
-**Request Body**
-```json
-{
-  "fullName": "Abdullah Alzahrani",
-  "email": "s202100000@kfupm.edu.sa",
-  "studentId": "202100000",
-  "password": "securepassword"
-}
-```
-
-**Success Response** `201 Created`
-```json
-{
-  "token": "<JWT>",
-  "user": {
-    "id": "...",
-    "fullName": "Abdullah Alzahrani",
-    "email": "s202100000@kfupm.edu.sa",
-    "studentId": "202100000",
-    "role": "student"
-  }
-}
-```
-
-**Error Responses**
-
-| Status | Message |
-| :--- | :--- |
-| `400` | Must use a KFUPM email address (@kfupm.edu.sa) |
-| `400` | Email already registered |
-| `400` | Student ID already in use |
-| `400` | Validation error (e.g. password too short) |
-
----
-
-### `POST /login`
-
-Authenticates an existing user.
-
-**Request Body**
-```json
-{
-  "email": "s202100000@kfupm.edu.sa",
-  "password": "securepassword"
-}
-```
-
-**Success Response** `200 OK`
-```json
-{
-  "token": "<JWT>",
-  "user": {
-    "id": "...",
-    "fullName": "Abdullah Alzahrani",
-    "email": "s202100000@kfupm.edu.sa",
-    "studentId": "202100000",
-    "role": "student"
-  }
-}
-```
-
-**Error Responses**
-
-| Status | Message |
-| :--- | :--- |
-| `400` | Email and password are required |
-| `401` | Invalid email or password |
-
----
-
-### `GET /me`
-
-Returns the currently authenticated user. Requires `Authorization: Bearer <token>` header.
-
-**Success Response** `200 OK`
-```json
-{
-  "id": "...",
-  "fullName": "Abdullah Alzahrani",
-  "email": "s202100000@kfupm.edu.sa",
-  "studentId": "202100000",
-  "role": "student",
-  "createdAt": "2026-04-22T00:00:00.000Z"
-}
-```
-
-**Error Responses**
-
-| Status | Message |
-| :--- | :--- |
-| `401` | Not authorized, no token |
-| `401` | Not authorized, invalid token |
+### What Was Done (Phase 5)
+* Created `backend/` with Express, CORS, and Helmet
+* Installed `mongoose` and connected to MongoDB Atlas (Cluster0)
+* `server.js` connects to MongoDB before starting the HTTP server, exits on failure
+* `.env` loaded via `dotenv` — never committed to git
