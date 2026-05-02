@@ -3,7 +3,12 @@
 **SWE Compass** is a high-fidelity React + Vite front-end portal designed for Software Engineering students at KFUPM. The application provides a comprehensive ecosystem for academic tracking, curriculum visualization, and role-based management in one responsive interface.
 
 ---
+## Live Deployment
 
+Frontend: https://sultan-swe-3-team-13-swe-363-01-pha.vercel.app
+Backend API: https://swe-compass-api.onrender.com
+
+---
 ## 👥 Team Members
 
 | Member | Name | Phase 5 Role | Phase 6 Role |
